@@ -1,6 +1,6 @@
 # Botex telegram
 
-Telegram module for :botex
+Telegram module for [:botex](https://github.com/bot-ex/botex)
 
 # How to start:
   
