@@ -22,7 +22,7 @@ defmodule BotexTelegram.Services.Menu.Api do
   @spec init(any) :: {:ok, %{menu: map()}}
   def init(_opts) do
     {menu, _} =
-      Config.get_menu_path()
+      Config.get(:menu_path)
       |> Tools.check_path!()
       |> Code.eval_file()
 
