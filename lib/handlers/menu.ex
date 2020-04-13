@@ -11,8 +11,8 @@ defmodule BotexTelegram.Handlers.Menu do
 
   alias BotEx.Models.{Message}
 
-  use BotEx.ModuleHandler
-  use BotEx.ModuleHandler.Init
+  use BotEx.Handlers.ModuleHandler
+  use BotEx.Handlers.ModuleInit
 
   def get_cmd_name, do: "menu"
 
