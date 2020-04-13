@@ -11,7 +11,7 @@ defmodule BotexTelegram.Middleware.MessageLogger do
 
   @spec transform(Message.t()) :: Message.t()
   def transform(%Message{} = t_msg) do
-    Config.get_show_msg_log()
+    Config.get(:show_msg_log)
     |> Kernel.if do
       Logger.info(t_msg |> info_to_string)
       Logger.info("==================================================================")
