@@ -17,7 +17,6 @@ defmodule BotexTelegram.Handlers.Menu do
   def get_cmd_name, do: "menu"
 
   # show menu from list
-  @spec handle_message(Message.t(), State.t()) :: {:noreply, State.t()}
   def handle_message(
         %Message{action: "show", data: menu_name, user: user, chat_id: chat_id},
         state
