@@ -1,6 +1,6 @@
 # Botex telegram
 
-Telegram module for [:botex](https://github.com/bot-ex/botex)
+Telegram module for [:bot_ex](https://github.com/bot-ex/bot_ex)
 
 # How to start:
   
@@ -12,7 +12,7 @@ Telegram module for [:botex](https://github.com/bot-ex/botex)
     ]
   end
 
- config :botex,
+ config :bot_ex,
    ....
     bots: [:telegram],
     middlware: [
