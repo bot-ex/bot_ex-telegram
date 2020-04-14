@@ -6,7 +6,7 @@ defmodule BotexTelegram.Updaters.Telegram do
 
   use GenServer
   require Logger
-  alias BotEx.Middleware.Handler
+  alias BotEx.Routing.Handler
 
   def child_spec(opts) do
     %{

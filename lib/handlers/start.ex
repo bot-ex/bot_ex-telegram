@@ -2,10 +2,10 @@ defmodule BotexTelegram.Handlers.Start do
   @moduledoc """
   Модуль обработки команды запуска бота `/start`
   """
-  use GenServer
-  use BotEx.ModuleHandler
-  use BotEx.ModuleHandler.Init
-
+  
+  use BotEx.Handlers.ModuleHandler
+  use BotEx.Handlers.ModuleInit
+  
   alias BotEx.Models.Message
   alias BotexTelegram.Services.Menu.Api, as: MenuApi
 
