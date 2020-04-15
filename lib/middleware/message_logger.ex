@@ -36,13 +36,12 @@ defmodule BotexTelegram.Middleware.MessageLogger do
           } = msg
       }) do
     "Tlgm Message" <>
-      "\nType: " <>
-      nadia_type(msg) <>
+      "\nType: #{nadia_type(msg)}" <>
       "\nUser info" <>
       "\n - user_id: #{user_id}\n - telegram name: #{name}\n - first_name: #{first_name}\n - last name: #{
         last_name
       }" <>
-      "\noriginal text: " <> nadia_text(msg)
+      "\noriginal text: #{nadia_text(msg)}"
   end
 
   defp nadia_type(%Nadia.Model.Message{}), do: "Nadia Message"

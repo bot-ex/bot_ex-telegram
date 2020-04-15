@@ -9,8 +9,8 @@ defmodule BotexTelegram.Middleware.TextInput do
   alias BotEx.Helpers.UserActions
 
   @spec transform(Message.t()) :: Message.t()
-  def transform(%Message{chat_id: user_id, text: text, is_cmd: false}) do
-    %Message{ UserActions.get_last_call(user_id) | text: text, is_cmd: false}
+  def transform(%Message{chat_id: user_id, text: text, is_cmd: false, msg: msg}) do
+    %Message{ UserActions.get_last_call(user_id) | text: text, is_cmd: false, msg: msg }
   end
 
   def transform(%Message{} = t_msg) do
