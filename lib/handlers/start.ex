@@ -11,9 +11,9 @@ defmodule BotexTelegram.Handlers.Start do
 
   def get_cmd_name, do: "start"
 
-  def handle_message(%Message{is_cmd: true, user: user}, state) do
+  def handle_message(%Message{is_cmd: true, user: user}) do
     MenuApi.show_menu("main_menu", user.id)
 
-    {:noreply, state}
+    nil
   end
 end

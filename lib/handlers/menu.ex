@@ -17,11 +17,7 @@ defmodule BotexTelegram.Handlers.Menu do
   def get_cmd_name, do: "menu"
 
   # show menu from list
-  def handle_message(
-        %Message{action: "show", data: menu_name, user: user, chat_id: chat_id},
-        state
-      ) do
-
+  def handle_message(%Message{action: "show", data: menu_name, user: user, chat_id: chat_id}) do
     menu_config = MenuApi.get_all()
     menu = MenuHelper.get_menu(menu_name, menu_config)
     caption = MenuHelper.get_menu_caption(menu)
@@ -29,12 +25,12 @@ defmodule BotexTelegram.Handlers.Menu do
 
     TelegramApi.send_with_buttons(caption, chat_id, buttons)
 
-    {:noreply, state}
+    nil
   end
 
-  def handle_message(_msg, state) do
+  def handle_message(_msg) do
     Logger.warn("Menu not found")
 
-    {:noreply, state}
+    nil
   end
 end
