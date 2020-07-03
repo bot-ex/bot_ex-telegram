@@ -6,7 +6,7 @@ defmodule BotexTelegram.Updaters.Telegram do
 
   use GenServer
   require Logger
-  alias BotEx.Routing.Handler
+  alias BotEx.Routing.MessageHandler
 
   @default_upate_interval 1000
 
@@ -82,7 +82,7 @@ defmodule BotexTelegram.Updaters.Telegram do
       end
     )
     |> Enum.filter(fn msg -> msg != nil end)
-    |> Handler.handle(:telegram)
+    |> MessageHandler.handle(:telegram)
 
     %Nadia.Model.Update{update_id: lastId} = List.last(updates)
     cycle(lastId + 1, interval)
