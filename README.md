@@ -19,7 +19,6 @@ Telegram module for [:bot_ex](https://github.com/bot-ex/bot_ex)
       telegram: [
         BotexTelegram.Middleware.NadiaMessageTransformer,
         BotexTelegram.Middleware.Auth,
-        BotEx.Middleware.ShortCmd,
         BotexTelegram.Middleware.TextInput,
         BotEx.Middleware.MessageLogger,
         BotexTelegram.Middleware.MessageLogger
@@ -27,11 +26,14 @@ Telegram module for [:bot_ex](https://github.com/bot-ex/bot_ex)
     ],
     handlers: [
       telegram: [
-        #tupples with {module, count workers}
-        {BotexTelegram.Handlers.Start, 5},
-        {BotexTelegram.Handlers.Menu, 10}
+        #tupples with {module, buffering time}
+        {BotexTelegram.Handlers.Start, 500},
+        {BotexTelegram.Handlers.Menu, 500}
       ]
     ]
+
+  #the interval for getting updates from telegram api
+  config :bot_ex, update_interval: 1000
 ```
 
 ```elixir
@@ -76,16 +78,5 @@ Optionaly you can create file `routes.exs` and redefine or add aliases for your 
 %{
   telegram:
     %{"s" => BotexTelegram.Handlers.Start}
-}
-```
-Also you can create file `short_map.exs` that contains text aliases for command
-
-### Example `short_map.exs`
-```elixir
-%{
-  telegram:
-  %{
-    "i" => {BotexTelegram.Handlers.Start.get_cmd_name(), "some action"}
-  }
 }
 ```

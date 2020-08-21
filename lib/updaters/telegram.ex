@@ -6,7 +6,9 @@ defmodule BotexTelegram.Updaters.Telegram do
 
   use GenServer
   require Logger
-  alias BotEx.Routing.Handler
+  alias BotEx.Routing.MessageHandler
+
+  @default_upate_interval 1000
 
   def child_spec(opts) do
     %{
@@ -21,32 +23,34 @@ defmodule BotexTelegram.Updaters.Telegram do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
 
-  @spec init(any) :: {:ok, :no_state}
+  @spec init(any) :: {:ok, map()}
   def init(_opts) do
     Process.flag(:trap_exit, true)
-    cycle()
-    {:ok, :no_state}
+
+    interval = Application.get_env(:botex_telegram, :update_interval, @default_upate_interval)
+
+    cycle(nil, interval)
+    {:ok, %{"interval" => interval}}
   end
 
-  # main data acquisition cycle
-  defp cycle(), do: cycle(nil)
-
   # as an argument receives the id of the last update
-  defp cycle(id) do
-    Process.send_after(self(), {:get_updates, id}, 1000)
+  defp cycle(id, interval) do
+    Process.send_after(self(), {:get_updates, id}, interval)
   end
 
   @doc """
   The function requests data from the telegram
   """
   @spec handle_info({:get_updates, integer()}, map()) :: {:noreply, map()}
-  def handle_info({:get_updates, id}, state) do
+  def handle_info({:get_updates, id}, %{"interval" => interval} = state) do
     try do
       case Nadia.get_updates(offset: id) do
-        {:ok, updates} -> handleEvents(updates)
+        {:ok, updates} ->
+          handleEvents(updates, interval)
+
         {:error, reason} ->
           Logger.error("Update error: #{inspect(reason)}")
-          cycle(id)
+          cycle(id, interval)
       end
     rescue
       e in Jason.EncodeError -> Logger.error("Update error: #{inspect(e)}")
@@ -63,10 +67,10 @@ defmodule BotexTelegram.Updaters.Telegram do
   def handle_info(_, state), do: {:noreply, state}
 
   # processes the list of new messages
-  @spec handleEvents([Nadia.Model.Update.t(), ...]) :: reference
-  defp handleEvents([]), do: cycle()
+  @spec handleEvents([Nadia.Model.Update.t(), ...], integer()) :: reference
+  defp handleEvents([], interval), do: cycle(nil, interval)
 
-  defp handleEvents(updates) do
+  defp handleEvents(updates, interval) do
     Enum.map(
       updates,
       fn
@@ -78,9 +82,9 @@ defmodule BotexTelegram.Updaters.Telegram do
       end
     )
     |> Enum.filter(fn msg -> msg != nil end)
-    |> Handler.handle(:telegram)
+    |> MessageHandler.handle(:telegram)
 
     %Nadia.Model.Update{update_id: lastId} = List.last(updates)
-    cycle(lastId + 1)
+    cycle(lastId + 1, interval)
   end
 end
