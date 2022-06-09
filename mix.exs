@@ -28,11 +28,11 @@ defmodule BotexTelegram.MixProject do
   defp deps do
     [
       {:bot_ex, "~> 1.0.0"},
-      {:nadia, "~> 0.6"},
-      {:timex, "~> 3.6"},
+      {:nadia, "~> 0.7"},
+      {:timex, "~> 3.7"},
       {:earmark, "~> 1.4", only: :dev},
       {:ex_doc, "~> 0.21", only: :dev},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.3"}
     ]
   end
 end
