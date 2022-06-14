@@ -26,7 +26,7 @@ defmodule BotexTelegram.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:bot_ex, path: "../bot_ex"},
+      {:bot_ex, "~> 1.0.1"},
       {:nadia, "~> 0.7"},
       {:timex, "~> 3.7"},
       {:earmark, "~> 1.4", only: :dev},
