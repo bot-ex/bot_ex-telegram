@@ -25,3 +25,8 @@ botex_telegram-*.tar
 .elixir_ls/
 
 botex-telegram.code-workspace
+.devcontainer
+docker-compose.yml
+.env
+Dockerfile
+entrypoint.sh

@@ -33,8 +33,7 @@ defmodule BotexTelegram.MixProject do
       {:timex, "~> 3.7"},
       {:earmark, "~> 1.4", only: :dev},
       {:ex_doc, "~> 0.22", only: :dev},
-      {:jason, "~> 1.4"},
-      {:ssl_verify_fun, "~> 1.1.6", manager: :rebar3, override: true}
+      {:jason, "~> 1.4"}
     ]
   end
 end
