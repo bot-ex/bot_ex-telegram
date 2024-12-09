@@ -17,7 +17,7 @@ Telegram module for [:bot_ex](https://github.com/bot-ex/bot_ex)
     bots: [:telegram],
     middleware: [
       telegram: [
-        BotexTelegram.Middleware.NadiaMessageTransformer,
+        BotexTelegram.Middleware.TelegexMessageTransformer,
         BotexTelegram.Middleware.Auth,
         BotexTelegram.Middleware.TextInput,
         BotEx.Middleware.MessageLogger,

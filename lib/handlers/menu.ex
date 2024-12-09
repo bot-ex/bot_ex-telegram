@@ -29,7 +29,7 @@ defmodule BotexTelegram.Handlers.Menu do
   end
 
   def handle_message(_msg) do
-    Logger.warn("Menu not found")
+    Logger.warning("Menu not found")
 
     nil
   end

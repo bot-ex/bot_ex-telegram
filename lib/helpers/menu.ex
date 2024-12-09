@@ -10,7 +10,7 @@ defmodule BotexTelegram.Helpers.Menu do
   - name: menu name
   - menu: full menu
   """
-  @spec get_menu(binary(), map()) :: TelegramModule.Menu.t()
+  @spec get_menu(binary(), map()) :: Menu.t()
   def get_menu(name, menus) do
     menu = menus[name]
 
@@ -28,7 +28,7 @@ defmodule BotexTelegram.Helpers.Menu do
   create telegram menu buttons from `BotEx.Models.Menu`
   """
   @spec create_menu_buttons(Menu.t(), any) :: [
-          [%{callback_data: binary, text: binary}, ...],
+          [Telegex.Type.InlineKeyboardButton.t(), ...],
           ...
         ]
   def create_menu_buttons(

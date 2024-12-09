@@ -13,22 +13,22 @@ defmodule BotexTelegram.Services.Telegram.Api do
   ## Parameters
   - msg: telegram message
   """
-  @spec get_user(Nadia.Model.CallbackQuery.t() | Nadia.Model.Message.t()) ::
-          Nadia.Model.User.t() | %{}
-  def get_user(%Nadia.Model.Message{from: nil, forward_from_chat: %{} = tUser}), do: tUser
-  def get_user(%Nadia.Model.Message{from: tUser}), do: tUser
-  def get_user(%Nadia.Model.CallbackQuery{from: tUser}), do: tUser
+  @spec get_user(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t()) ::
+          Telegex.Type.User.t() | %{}
+  # def get_user(%Telegex.Type.Message{from: nil, forward_from_chat: %{} = tUser}), do: tUser
+  def get_user(%Telegex.Type.Message{from: tUser}), do: tUser
+  def get_user(%Telegex.Type.CallbackQuery{from: tUser}), do: tUser
   def get_user(_msg), do: {:error, "Failed to retrieve user"}
 
   @doc "gather data from message or callback"
-  @spec get_date_time(Nadia.Model.CallbackQuery.t() | Nadia.Model.Message.t() | nil) ::
+  @spec get_date_time(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t() | nil) ::
           DateTime.t() | nil
-  def get_date_time(%Nadia.Model.Message{date: timestamp}) do
+  def get_date_time(%Telegex.Type.Message{date: timestamp}) do
     timestamp |> DateTime.from_unix!(:second)
   end
 
-  def get_date_time(%Nadia.Model.CallbackQuery{message: message}), do: get_date_time(message)
-  def get_date_time(%Message{msg: nadia_msg}), do: get_date_time(nadia_msg)
+  def get_date_time(%Telegex.Type.CallbackQuery{message: message}), do: get_date_time(message)
+  def get_date_time(%Message{msg: msg}), do: get_date_time(msg)
   def get_date_time(nil), do: nil
 
   @doc """
@@ -37,32 +37,31 @@ defmodule BotexTelegram.Services.Telegram.Api do
   ## Parameters
   - msg: telegram message
   """
-  @spec get_chat_id(Nadia.Model.CallbackQuery.t() | Nadia.Model.Message.t()) :: integer()
-  def get_chat_id(%Nadia.Model.Message{
-        chat: %Nadia.Model.Chat{
+  @spec get_chat_id(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t()) :: integer()
+  def get_chat_id(%Telegex.Type.Message{
+        chat: %Telegex.Type.Chat{
           id: chat_id
         }
       }),
       do: chat_id
 
-  def get_chat_id(%Nadia.Model.CallbackQuery{
-        message: %Nadia.Model.Message{
-          chat: %Nadia.Model.Chat{
+  def get_chat_id(%Telegex.Type.CallbackQuery{
+        message: %Telegex.Type.Message{
+          chat: %Telegex.Type.Chat{
             id: chat_id
           }
         }
       }),
       do: chat_id
 
-
   def get_chat_id(%Message{msg: msg}), do: get_chat_id(msg)
 
   @doc """
   Retrieves message id from telegram message
   """
-  @spec get_message_id(Nadia.Model.CallbackQuery.t() | Nadia.Model.Message.t()) :: integer()
-  def get_message_id(%Nadia.Model.Message{message_id: id}), do: id
-  def get_message_id(%Nadia.Model.CallbackQuery{message: msg}), do: get_message_id(msg)
+  @spec get_message_id(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t()) :: integer()
+  def get_message_id(%Telegex.Type.Message{message_id: id}), do: id
+  def get_message_id(%Telegex.Type.CallbackQuery{message: msg}), do: get_message_id(msg)
 
   @doc """
   Breaks the text into parts according
@@ -97,23 +96,22 @@ defmodule BotexTelegram.Services.Telegram.Api do
   ## Parameters
   - msg: message text
   - chat_id: chat or user id
-  - parse_mode: message processing mode for telegram `:Markdown` or `:HTML`
+  - parse_mode: message processing mode for telegram `"Markdown"`, `"MarkdownV2"` or `"HTML"`
   - markup: additional marking of the message, buttons, etc.
   """
   @spec send_message(
           binary(),
           integer(),
-          :Markdown | :HTML,
+          String.t(),
           map()
-          | Nadia.Model.ReplyKeyboardMarkup.t()
-          | Nadia.Model.ReplyKeyboardHide.t()
-          | Nadia.Model.ForceReply.t()
+          | Telegex.Type.ReplyKeyboardMarkup.t()
+          | Telegex.Type.ForceReply.t()
         ) ::
-          {:error, Nadia.Model.Error.t()} | {:ok, Nadia.Model.Message.t()}
-  def send_message(msg, chat_id, parse_mode \\ :Markdown, markup \\ %{})
+          {:error, Telegex.Error.t()} | {:ok, Telegex.Type.Message.t()}
+  def send_message(msg, chat_id, parse_mode \\ "MarkdownV2", markup \\ %{})
 
   def send_message(msg, chat_id, parse_mode, markup) do
-    result = Nadia.send_message(chat_id, msg, parse_mode: parse_mode, reply_markup: markup)
+    result = Telegex.send_message(chat_id, msg, parse_mode: parse_mode, reply_markup: markup)
 
     log_on_error(result)
 
@@ -127,12 +125,12 @@ defmodule BotexTelegram.Services.Telegram.Api do
           [%{callback_data: binary(), text: binary()}, ...],
           ...
         ]) ::
-          {:error, Nadia.Model.Error.t()} | {:ok, Nadia.Model.Message.t()}
+          {:error, Telegex.Error.t()} | {:ok, Telegex.Type.Message.t()}
   def send_with_buttons(msg, chat_id, buttons) do
     send_message(
       msg,
       chat_id,
-      :Markdown,
+      "MarkdownV2",
       %{inline_keyboard: buttons}
     )
   end
@@ -146,23 +144,23 @@ defmodule BotexTelegram.Services.Telegram.Api do
   - buttons: new buttons
   """
   @spec edit_message(
-          Nadia.Model.CallbackQuery.t() | Nadia.Model.Message.t(),
-          binary,
-          list
-        ) :: {:error, Nadia.Model.Error.t()} | {:ok, Nadia.Model.Message.t()}
-  def edit_message(%Nadia.Model.CallbackQuery{message: msg}, text, buttons) do
+          Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t(),
+          binary(),
+          list()
+        ) :: {:error, Telegex.Error.t()} | {:ok, Telegex.Type.Message.t()}
+  def edit_message(%Telegex.Type.CallbackQuery{message: msg}, text, buttons) do
     edit_message(msg, text, buttons)
   end
 
-  def edit_message(%Nadia.Model.Message{} = msg, text, buttons) do
+  def edit_message(%Telegex.Type.Message{} = msg, text, buttons) do
     message_id = get_message_id(msg)
 
-    edit_options = [
+    Telegex.edit_message_text(text,
+      chat_id: get_chat_id(msg),
+      message_id: message_id,
       reply_markup: %{inline_keyboard: buttons},
-      parse_mode: :Markdown
-    ]
-
-    Nadia.edit_message_text(get_chat_id(msg), message_id, nil, text, edit_options)
+      parse_mode: "MarkdownV2"
+    )
     |> log_on_error()
   end
 
@@ -173,13 +171,13 @@ defmodule BotexTelegram.Services.Telegram.Api do
   - chat_id: user or chat id
   """
   @spec send_photo(nil | binary, integer()) ::
-          {:error, Nadia.Model.Error.t()} | {:ok, binary() | Nadia.Model.Message.t()}
+          {:error, Telegex.Error.t()} | {:ok, binary() | Telegex.Type.Message.t()}
   def send_photo(nil, _chat_id), do: {:error, "set file path or id"}
-  def send_photo(file, chat_id), do: Nadia.send_photo(chat_id, file)
+  def send_photo(file, chat_id), do: Telegex.send_photo(chat_id, file)
 
   # show error in output
   defp log_on_error({:error, reason}) do
-    Logger.warn("Telegram message rejected:\n" <> inspect(reason))
+    Logger.warning("Telegram message rejected:\n" <> inspect(reason))
   end
 
   defp log_on_error(_), do: nil

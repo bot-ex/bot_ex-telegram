@@ -14,7 +14,7 @@ defmodule BotexTelegram.Helpers.Buttons do
   - buttons: list of `[[BotEx.Models.Button]]`
   """
   @spec create_from_model([[Button.t()]]) :: [
-          [%{text: binary(), callback_data: binary()}]
+          [Telegex.Type.InlineKeyboardButton.t()]
         ]
   def create_from_model(buttons) do
     Enum.map(buttons, fn group ->
@@ -24,7 +24,7 @@ defmodule BotexTelegram.Helpers.Buttons do
                            module: module,
                            text: text
                          } ->
-        %{text: text, callback_data: "/#{module}|#{action}|#{data}"}
+        %Telegex.Type.InlineKeyboardButton{text: text, callback_data: "/#{module}|#{action}|#{data}"}
       end)
     end)
   end

@@ -36,17 +36,17 @@ defmodule BotexTelegram.Middleware.MessageLogger do
           } = msg
       }) do
     "Tlgm Message" <>
-      "\nType: #{nadia_type(msg)}" <>
+      "\nType: #{message_type(msg)}" <>
       "\nUser info" <>
       "\n - user_id: #{user_id}\n - telegram name: #{name}\n - first_name: #{first_name}\n - last name: #{
         last_name
       }" <>
-      "\noriginal text: #{nadia_text(msg)}"
+      "\noriginal text: #{message_text(msg)}"
   end
 
-  defp nadia_type(%Nadia.Model.Message{}), do: "Nadia Message"
-  defp nadia_type(%Nadia.Model.CallbackQuery{}), do: "Nadia Callback"
+  defp message_type(%Telegex.Type.Message{}), do: "Telegram Message"
+  defp message_type(%Telegex.Type.CallbackQuery{}), do: "Telegram Callback"
 
-  defp nadia_text(%Nadia.Model.Message{text: text}), do: text
-  defp nadia_text(%Nadia.Model.CallbackQuery{data: data}), do: data
+  defp message_text(%Telegex.Type.Message{text: text}), do: text
+  defp message_text(%Telegex.Type.CallbackQuery{data: data}), do: data
 end

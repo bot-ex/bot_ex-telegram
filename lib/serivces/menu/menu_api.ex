@@ -3,6 +3,7 @@ defmodule BotexTelegram.Services.Menu.Api do
 
   alias BotEx.Helpers.Tools
   alias BotEx.Config
+  alias BotEx.Models.Menu
   alias BotexTelegram.Helpers.Menu, as: MenuHelper
   alias BotexTelegram.Services.Telegram.Api, as: TelegramApi
 
@@ -83,8 +84,8 @@ defmodule BotexTelegram.Services.Menu.Api do
     GenServer.cast(__MODULE__, {:add_menu, menu})
   end
 
-  @spec handle_call({:get_menu, binary(), list()} | :get_all, {pid(), tag :: term()}, State.t()) ::
-          {:reply, list(), State.t()}
+  @spec handle_call({:get_menu, binary(), list()} | :get_all, {pid(), tag :: term()}, map()) ::
+          {:reply, list(), map()}
   def handle_call(
         {:get_menu, name, params},
         _from,

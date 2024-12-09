@@ -44,7 +44,7 @@ defmodule BotexTelegram.Updaters.Telegram do
   @spec handle_info({:get_updates, integer()}, map()) :: {:noreply, map()}
   def handle_info({:get_updates, id}, %{"interval" => interval} = state) do
     try do
-      case Nadia.get_updates(offset: id) do
+      case Telegex.get_updates(offset: id) do
         {:ok, updates} ->
           handleEvents(updates, interval)
 
@@ -67,7 +67,7 @@ defmodule BotexTelegram.Updaters.Telegram do
   def handle_info(_, state), do: {:noreply, state}
 
   # processes the list of new messages
-  @spec handleEvents([Nadia.Model.Update.t(), ...], integer()) :: reference
+  @spec handleEvents([Telegex.Type.Update.t(), ...], integer()) :: reference
   defp handleEvents([], interval), do: cycle(nil, interval)
 
   defp handleEvents(updates, interval) do
@@ -76,15 +76,15 @@ defmodule BotexTelegram.Updaters.Telegram do
       fn
         # вообще вариантов может быть больше, но в текущем варианте, нужно обрабатывать только
         # простые сообщения и нажатия кнопок
-        %Nadia.Model.Update{message: nil, callback_query: msg} -> msg
-        %Nadia.Model.Update{message: msg, callback_query: nil} -> msg
+        %Telegex.Type.Update{message: nil, callback_query: msg} -> msg
+        %Telegex.Type.Update{message: msg, callback_query: nil} -> msg
         _msg -> nil
       end
     )
     |> Enum.filter(fn msg -> msg != nil end)
     |> MessageHandler.handle(:telegram)
 
-    %Nadia.Model.Update{update_id: lastId} = List.last(updates)
+    %Telegex.Type.Update{update_id: lastId} = List.last(updates)
     cycle(lastId + 1, interval)
   end
 end
