@@ -2,6 +2,8 @@ defmodule BotexTelegram.Helpers.Buttons do
   @moduledoc """
    Buttons creating helper
   """
+  alias Telegex.Type.InlineKeyboardButton
+  alias Telegex.Type.InlineKeyboardMarkup
   alias BotEx.Models.Button
 
   @empty_btn_text " "
@@ -13,20 +15,28 @@ defmodule BotexTelegram.Helpers.Buttons do
   ## Parameters
   - buttons: list of `[[BotEx.Models.Button]]`
   """
-  @spec create_from_model([[Button.t()]]) :: [
-          [Telegex.Type.InlineKeyboardButton.t()]
-        ]
+  @spec create_from_model([[Button.t()]]) :: %InlineKeyboardMarkup{
+          inline_keyboard: [
+            [InlineKeyboardButton.t()]
+          ]
+        }
   def create_from_model(buttons) do
-    Enum.map(buttons, fn group ->
-      Enum.map(group, fn %Button{
-                           action: action,
-                           data: data,
-                           module: module,
-                           text: text
-                         } ->
-        %Telegex.Type.InlineKeyboardButton{text: text, callback_data: "/#{module}|#{action}|#{data}"}
-      end)
-    end)
+    %InlineKeyboardMarkup{
+      inline_keyboard:
+        Enum.map(buttons, fn group ->
+          Enum.map(group, fn %Button{
+                               action: action,
+                               data: data,
+                               module: module,
+                               text: text
+                             } ->
+            %InlineKeyboardButton{
+              text: text,
+              callback_data: "/#{module}|#{action}|#{data}"
+            }
+          end)
+        end)
+    }
   end
 
   @doc """

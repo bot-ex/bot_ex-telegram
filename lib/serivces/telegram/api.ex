@@ -46,8 +46,8 @@ defmodule BotexTelegram.Services.Telegram.Api do
       do: chat_id
 
   def get_chat_id(%Telegex.Type.CallbackQuery{
-        message: %Telegex.Type.Message{
-          chat: %Telegex.Type.Chat{
+        message: %{
+          chat: %{
             id: chat_id
           }
         }
@@ -131,7 +131,7 @@ defmodule BotexTelegram.Services.Telegram.Api do
       msg,
       chat_id,
       "MarkdownV2",
-      %{inline_keyboard: buttons}
+      buttons
     )
   end
 
