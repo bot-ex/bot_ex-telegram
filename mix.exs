@@ -4,7 +4,7 @@ defmodule BotexTelegram.MixProject do
   def project do
     [
       app: :botex_telegram,
-      version: "0.4.1",
+      version: "2.0.0",
       description: "Telegram module for https://github.com/bot-ex/bot_ex",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
