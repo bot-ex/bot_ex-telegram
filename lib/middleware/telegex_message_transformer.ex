@@ -6,13 +6,18 @@ defmodule BotexTelegram.Middleware.TelegexMessageTransformer do
 
   alias BotEx.Models.Message
 
-  @spec transform(Telegex.Type.Message.t() | Telegex.Type.CallbackQuery.t()) ::
+  @spec transform(
+          Telegex.Type.Message.t()
+          | Telegex.Type.CallbackQuery.t()
+          | Telegex.Type.PreCheckoutQuery.t()
+        ) ::
           Message.t()
   def transform(msg) do
     data =
       case msg do
         %Telegex.Type.Message{text: text} -> text
         %Telegex.Type.CallbackQuery{data: cmd} -> cmd
+        %Telegex.Type.PreCheckoutQuery{} -> msg
       end
 
     t_msg = %Message{
@@ -29,7 +34,7 @@ defmodule BotexTelegram.Middleware.TelegexMessageTransformer do
   # ## Parameters:
   # - text: text from message
   # - t_msg: `BotEx.Models.Message`
-  @spec handle_message(nil | binary(), Message.t()) :: Message.t()
+  @spec handle_message(any(), Message.t()) :: Message.t()
   defp handle_message(nil, t_msg), do: t_msg
 
   defp handle_message(text, t_msg) do
@@ -44,8 +49,9 @@ defmodule BotexTelegram.Middleware.TelegexMessageTransformer do
   # Checks if an incoming message is a command
   # ## Parameters:
   # - text: analyzed text
-  @spec is_command?(binary()) :: boolean
-  defp is_command?(text), do: Regex.match?(~r/^\/.+/, text)
+  @spec is_command?(any()) :: boolean
+  defp is_command?(text) when is_binary(text), do: Regex.match?(~r/^\/.+/, text)
+  defp is_command?(_text), do: false
 
   # Additional helper for parsing a command by separator type
   # ## Parameters:
@@ -89,4 +95,6 @@ defmodule BotexTelegram.Middleware.TelegexMessageTransformer do
   defp finalize({"/" <> cmd, action, data}, t_msg) do
     %Message{t_msg | is_cmd: true, module: cmd, action: action, data: data, text: ""}
   end
+
+  defp finalize(_, t_msg), do: t_msg
 end

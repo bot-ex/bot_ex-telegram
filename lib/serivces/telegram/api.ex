@@ -13,21 +13,32 @@ defmodule BotexTelegram.Services.Telegram.Api do
   ## Parameters
   - msg: telegram message
   """
-  @spec get_user(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t()) ::
+  @spec get_user(
+          Telegex.Type.CallbackQuery.t()
+          | Telegex.Type.Message.t()
+          | Telegex.Type.PreCheckoutQuery.t()
+        ) ::
           Telegex.Type.User.t() | %{}
   # def get_user(%Telegex.Type.Message{from: nil, forward_from_chat: %{} = tUser}), do: tUser
   def get_user(%Telegex.Type.Message{from: tUser}), do: tUser
   def get_user(%Telegex.Type.CallbackQuery{from: tUser}), do: tUser
+  def get_user(%Telegex.Type.PreCheckoutQuery{from: tUser}), do: tUser
   def get_user(_msg), do: {:error, "Failed to retrieve user"}
 
   @doc "gather data from message or callback"
-  @spec get_date_time(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t() | nil) ::
+  @spec get_date_time(
+          Telegex.Type.CallbackQuery.t()
+          | Telegex.Type.Message.t()
+          | Telegex.Type.PreCheckoutQuery.t()
+          | nil
+        ) ::
           DateTime.t() | nil
   def get_date_time(%Telegex.Type.Message{date: timestamp}) do
     timestamp |> DateTime.from_unix!(:second)
   end
 
   def get_date_time(%Telegex.Type.CallbackQuery{message: message}), do: get_date_time(message)
+  def get_date_time(%Telegex.Type.PreCheckoutQuery{}), do: nil
   def get_date_time(%Message{msg: msg}), do: get_date_time(msg)
   def get_date_time(nil), do: nil
 
@@ -37,7 +48,11 @@ defmodule BotexTelegram.Services.Telegram.Api do
   ## Parameters
   - msg: telegram message
   """
-  @spec get_chat_id(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t()) :: integer()
+  @spec get_chat_id(
+          Telegex.Type.CallbackQuery.t()
+          | Telegex.Type.Message.t()
+          | Telegex.Type.PreCheckoutQuery.t()
+        ) :: integer()
   def get_chat_id(%Telegex.Type.Message{
         chat: %Telegex.Type.Chat{
           id: chat_id
@@ -54,14 +69,26 @@ defmodule BotexTelegram.Services.Telegram.Api do
       }),
       do: chat_id
 
+  def get_chat_id(%Telegex.Type.PreCheckoutQuery{
+        from: %Telegex.Type.User{
+          id: chat_id
+        }
+      }),
+      do: chat_id
+
   def get_chat_id(%Message{msg: msg}), do: get_chat_id(msg)
 
   @doc """
   Retrieves message id from telegram message
   """
-  @spec get_message_id(Telegex.Type.CallbackQuery.t() | Telegex.Type.Message.t()) :: integer()
+  @spec get_message_id(
+          Telegex.Type.CallbackQuery.t()
+          | Telegex.Type.Message.t()
+          | Telegex.Type.PreCheckoutQuery.t()
+        ) :: integer()
   def get_message_id(%Telegex.Type.Message{message_id: id}), do: id
   def get_message_id(%Telegex.Type.CallbackQuery{message: msg}), do: get_message_id(msg)
+  def get_message_id(%Telegex.Type.PreCheckoutQuery{id: id}), do: id
 
   @doc """
   Breaks the text into parts according

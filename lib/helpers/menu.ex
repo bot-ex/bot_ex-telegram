@@ -21,13 +21,13 @@ defmodule BotexTelegram.Helpers.Menu do
     menu
   end
 
-  @spec get_menu_caption(Menu.t()) :: any
+  @spec get_menu_caption(Menu.t()) :: any()
   def get_menu_caption(%Menu{text: text}), do: text
 
   @doc """
   create telegram menu buttons from `BotEx.Models.Menu`
   """
-  @spec create_menu_buttons(Menu.t(), any) :: [
+  @spec create_menu_buttons(Menu.t(), any()) :: [
           [Telegex.Type.InlineKeyboardButton.t(), ...],
           ...
         ]

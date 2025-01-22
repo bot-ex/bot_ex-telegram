@@ -46,6 +46,7 @@ defmodule BotexTelegram.Updaters.Telegram do
     try do
       case Telegex.get_updates(offset: id) do
         {:ok, updates} ->
+          # Logger.debug(inspect(updates))
           handleEvents(updates, interval)
 
         {:error, reason} ->
@@ -76,9 +77,22 @@ defmodule BotexTelegram.Updaters.Telegram do
       fn
         # вообще вариантов может быть больше, но в текущем варианте, нужно обрабатывать только
         # простые сообщения и нажатия кнопок
-        %Telegex.Type.Update{message: nil, callback_query: msg} -> msg
-        %Telegex.Type.Update{message: msg, callback_query: nil} -> msg
-        _msg -> nil
+        %Telegex.Type.Update{
+          message: nil,
+          callback_query: nil,
+          pre_checkout_query: %Telegex.Type.PreCheckoutQuery{} = msg
+        } ->
+          msg
+
+        %Telegex.Type.Update{message: nil, callback_query: msg} ->
+          msg
+
+        %Telegex.Type.Update{message: msg, callback_query: nil} ->
+          msg
+
+        msg ->
+          Logger.debug("Unexpected message: " <> inspect(msg))
+          nil
       end
     )
     |> Enum.filter(fn msg -> msg != nil end)
